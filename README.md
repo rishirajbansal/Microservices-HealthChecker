@@ -4,16 +4,18 @@ Health Monitoring tool to monitor microservices/apps
 
 ## Contents
 1. [Overview](#overview)
-2. [Tech Stack](#tech-stack)
-3. [Prerequisites](#prerequisites)
-4. [Installation](#installation)
+2. [Application Architecture Workflow](#application-architecture-workflow)
+3. [Deployment Architecture](#deployment-architecture)
+4. [Tech Stack](#tech-stack)
+5. [Prerequisites](#prerequisites)
+6. [Installation](#installation)
      - [Local Environment](#local-environment)
      - [Docker Environment](#docker-environment)
-5. [Launching Application](#launching-application)
+7. [Launching Application](#launching-application)
      - [In Local Environment](#in-local-environment)
      - [In Docker Environment](#in-docker-environment)
-6. [Accessing Application](#accessing-application)
-7. [Application Architecture Workflow](#application-architecture-workflow)
+8. [Accessing Application](#accessing-application)
+
 
 
 ## Overview
