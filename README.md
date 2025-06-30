@@ -3,17 +3,17 @@
 Health Monitoring tool to monitor microservices/apps
 
 ## Contents
-1. [Overview](#markdown-header-overview)
-2. [Tech Stack](#markdown-header-tech-stack)
-3. [Prerequisites](#markdown-header-prerequisites)
-4. [Installation](#markdown-header-installation)
-     - [Local Environment](#markdown-header-local-environment)
-     - [Docker Environment](#markdown-header-docker-environment)
-5. [Launching Application](#markdown-header-launching-application)
-     - [In Local Environment](#markdown-header-in-local-environment)
-     - [In Docker Environment](#markdown-header-in-docker-environment)
-6. [Accessing Application](#markdown-header-accessing-application)
-7. [Application Architecture Workflow](#markdown-header-application-architecture-workflow)
+1. [Overview](#overview)
+2. [Tech Stack](#tech-stack)
+3. [Prerequisites](#prerequisites)
+4. [Installation](#installation)
+     - [Local Environment](#local-environment)
+     - [Docker Environment](#docker-environment)
+5. [Launching Application](#launching-application)
+     - [In Local Environment](#in-local-environment)
+     - [In Docker Environment](#in-docker-environment)
+6. [Accessing Application](#accessing-application)
+7. [Application Architecture Workflow](#application-architecture-workflow)
 
 
 ## Overview
