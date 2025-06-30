@@ -1,0 +1,20 @@
+{
+    "AWSEBDockerrunVersion": "1",
+    "Ports": [
+        {
+          "ContainerPort": 1400,
+          "HostPort": 1400
+        },
+        {
+          "ContainerPort": 8443,
+          "HostPort": 8443
+        }
+    ],
+    "Volumes": [
+        {
+          "HostDirectory": "/etc/localtime",
+          "ContainerDirectory": "/etc/localtime"
+        }
+    ],
+    "Logging": "/home/healthcheckerappuser/healthChecker/logs"
+}

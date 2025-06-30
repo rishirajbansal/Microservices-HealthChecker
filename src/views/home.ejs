@@ -1,0 +1,281 @@
+<!doctype html>
+<html>
+
+    <head>
+        <title>Health Checker</title>
+        <link rel="stylesheet" id="google-fonts-css"
+            href="https://fonts.googleapis.com/css?family=Roboto%3A100%2C100italic%2C300%2C300italic%2Cregular%2Citalic%2C500%2C500italic%2C700%2C700italic%2C900%2C900italic%7CRubik%3A300%2C300italic%2Cregular%2Citalic%2C500%2C500italic%2C700%2C700italic%2C900%2C900italic&#038;ver=5.4.2"
+            type="text/css" media="all" />
+        <meta http-equiv="refresh" content="30" />
+        <meta charset="utf-8" />
+        <link rel="stylesheet" type="text/css" href="custom.css" />
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+
+    <body>
+        <% var apiResponse=data.apiResponse %>
+        <% var apiHttpStatus=data.apiHttpStatus %>
+        <% var intStatus=data.intStatus %>
+        <% var intResponse=data.intResponse %>
+        <% var healthCheckResults=apiResponse != undefined && apiResponse.results != undefined ? apiResponse.results : undefined %>
+
+        <% var classTgHealthTypeName ='' %>
+        <% var classTgHealthTypeValue ='' %>
+
+        <img src="https://publicweb-cdn.s3.us-east-2.amazonaws.com/maintenance/Logo.png" class="logo" alt="">
+        <div class="container">
+
+            <div class="block">
+                <h3 style="text-align: center">Health Checker Application for identifying Health Status for all Services
+                </h3>
+            </div>
+
+            <% if (intStatus === genConsts.INT_STATUS_API_SUCCESS) { %>
+
+                <div class="float-container">
+
+                    <div class="tg-wrap" style="display: inline-block; width: 70%; padding: 20px; ">
+                        <table class="tg" style="table-layout: fixed; width: 635px">
+                            <colgroup>
+                                <col style="width: 180px;">
+                                <col style="width: 350px">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th class="tg-serv" colspan="2" style="font-weight:bold;">CMS Service</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="tg-norm">Overall Status</td>
+                                    <% if (apiResponse.overallStatus === healthStatus.HEALTHY) { %>
+                                        <td class="tg-norm" style="color:#009901"><%= apiResponse.overallStatus %></td>
+                                    <% } else if (apiResponse.overallStatus === healthStatus.PARTIAL_HEALTHY) { %>
+                                        <td class="tg-norm" style="color:#e6a01e"><%= apiResponse.overallStatus %></td>
+                                    <% } else if (apiResponse.overallStatus === healthStatus.UNDETERMINED) { %>
+                                        <td class="tg-norm" style="color:#b8aeae"><%= apiResponse.overallStatus %></td>
+                                    <% } else { %>
+                                        <td class="tg-norm" style="color:#e6a01e"><%= apiResponse.overallStatus %></td>
+                                    <% } %>
+                                </tr>
+                                <tr>
+                                    <td class="tg-norm">HTTP Status</td>
+                                    <td class="tg-norm">
+                                        <%= apiHttpStatus %>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="tg-norm">Timestamp</td>
+                                    <td class="tg-norm">
+                                        <%= apiResponse.timestamp %>
+                                    </td>
+                                </tr>
+
+                                <% if (apiResponse.overallStatus === healthStatus.UNDETERMINED) { %>
+                                    <tr>
+                                        <td class="tg-err-1">Error</td>
+                                        <td class="tg-err-1"><%= apiResponse.error %></td>
+                                    </tr>
+                                <% } %>
+
+                                <% if (healthCheckResults != undefined && healthCheckResults.length > 0) {
+                                    healthCheckResults.forEach(healthCheckResult => {
+                                        if (healthCheckResult.status === healthStatus.HEALTHY) {
+                                            classTgHealthTypeName = 'tg-heal-name'
+                                            classTgHealthTypeValue = 'tg-heal-value'
+                                        } else if (healthCheckResult.status === healthStatus.PARTIAL_HEALTHY) {
+                                            classTgHealthTypeName = 'tg-par-unheal-name'
+                                            classTgHealthTypeValue = 'tg-par-unheal-value'
+                                        } else if (healthCheckResult.status === healthStatus.UNDETERMINED) {
+                                            classTgHealthTypeName = 'tg-par-undet-name'
+                                            classTgHealthTypeValue = 'tg-par-undet-value'
+                                        } else {
+                                            classTgHealthTypeName = 'tg-unheal-name'
+                                            classTgHealthTypeValue = 'tg-unheal-value'    
+                                        }
+                                        %>
+                                        <tr>
+                                            <td class="<%= classTgHealthTypeName %>"><%= healthCheckResult.service %></td>
+                                            <td class="<%= classTgHealthTypeValue %>"><%= healthCheckResult.status %></td>
+                                        </tr>
+                                        <%  if (healthCheckResult.service === healthCheckType.SERVER) { %>
+                                            <tr>
+                                                <td class="tg-norm">Uptime</td>
+                                                <td class="tg-norm"><%= healthCheckResult.info.uptime %></td>
+                                            </tr>
+
+                                        <% } else if (healthCheckResult.service === healthCheckType.DATABASE) { %>
+                                            <% if (healthCheckResult.message != undefined && healthCheckResult.message !== '') { %>
+                                                <tr>
+                                                    <td class="tg-norm">Message</td>
+                                                    <td class="tg-norm"><%= healthCheckResult.message %></td>
+                                                </tr>
+                                            <% } %>
+
+                                        <% } else if (healthCheckResult.service === healthCheckType.MEMORY) { %>
+                                            <tr>
+                                                <td class="tg-norm">Available Memory</td>
+                                                <td class="tg-norm"><%= healthCheckResult.info.availableMemory %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tg-norm">Memory In Use</td>
+                                                <td class="tg-norm"><%= healthCheckResult.info.memoryInUse %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tg-norm">Total Memory</td>
+                                                <td class="tg-norm"><%= healthCheckResult.info.totalMemory %></td>
+                                            </tr>
+                                            <% if (healthCheckResult.message != undefined && healthCheckResult.message !== '') { %>
+                                                <tr>
+                                                    <td class="tg-norm">Message</td>
+                                                    <td class="tg-norm"><%= healthCheckResult.message %></td>
+                                                </tr>
+                                            <% } %>
+
+                                        <% } else if (healthCheckResult.service === healthCheckType.DISK) { %>
+                                            <tr>
+                                                <td class="tg-norm">Available Disk Space</td>
+                                                <td class="tg-norm"><%= healthCheckResult.info.availableDiskSpace %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tg-norm">Available Disk Space (%age)</td>
+                                                <td class="tg-norm"><%= healthCheckResult.info.availableDiskSpacePercent %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tg-norm">Occupied Disk Space</td>
+                                                <td class="tg-norm"><%= healthCheckResult.info.occupiedDiskSpace %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tg-norm">Total Disk Space</td>
+                                                <td class="tg-norm"><%= healthCheckResult.info.totalDiskSpace %></td>
+                                            </tr>
+                                            <% if (healthCheckResult.message != undefined && healthCheckResult.message !== '') { %>
+                                                <tr>
+                                                    <td class="tg-norm">Message</td>
+                                                    <td class="tg-norm"><%= healthCheckResult.message %></td>
+                                                </tr>
+                                            <% } %>
+
+                                        <% } else if (healthCheckResult.service === healthCheckType.NOTIFICATION) { %>
+                                            <% if (healthCheckResult.message != undefined && healthCheckResult.message !== '') { %>
+                                                <tr>
+                                                    <td class="tg-norm">Message</td>
+                                                    <td class="tg-norm"><%= healthCheckResult.message %></td>
+                                                </tr>
+                                            <% } %>
+                                        <% } else { %>
+                                                <tr>
+                                                    <td class="tg-norm" colspan="2">Not Supported</td>
+                                                </tr>
+                                        <% } %>
+
+                                        <% if (healthCheckResult.status === healthStatus.UNHEALTHY) { %>
+                                            <tr>
+                                                <td class="tg-err-1">Error</td>
+                                                <td class="tg-err-1"><%= healthCheckResult.error.error %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tg-norm">Message</td>
+                                                <td class="tg-norm"><%= healthCheckResult.error.message %></td>
+                                            </tr>
+                                        <% } %>
+                                        
+                                    <% })
+                                } %>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                    <div class="tg-wrap" style="width: 20%; padding: 20px; float: right">
+                        <table class="tg" style="table-layout: fixed; width: 200px">
+                            <colgroup>
+                                <col style="width: 250px;">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th class="tg-info" colspan="1"><span style="font-weight:bold;color:#3762DE">Info</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="tg-norm">
+                                        <span style="font-weight:bold;">Memory Check</span>
+                                        <br>
+                                        Threshold set to check if Available Memory is less then 500 MB
+                                        <br><br>
+                                        <span style="font-weight:bold;">Disk Check</span>
+                                        <br>
+                                        Threshold set to check if Available Disk space is less then 10%
+                                        <br><br>
+                                        <span style="font-weight:bold;">Notification Check</span>
+                                        <br>
+                                        Notification check is tested by sending test email message
+                                        <br><br>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            <% } else if (intStatus === genConsts.INT_STATUS_API_FAILED) { %>
+                <div class="tg-wrap">
+                    <table class="tg" style="table-layout: fixed; width: 635px">
+                        <colgroup>
+                            <col style="width: 150px;">
+                            <col style="width: 350px">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th class="tg-serv-error" colspan="2"><span style="font-weight:bold;">NO Response from Downstream Service</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="tg-err-1">Error</td>
+                                <td class="tg-err-1"><%= intResponse.error %></td>
+                            </tr>
+                            <tr>
+                                <td class="tg-norm">Message</td>
+                                <td class="tg-norm"><%= intResponse.message %></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            <% } else { %>
+                <div class="tg-wrap">
+                    <table class="tg" style="table-layout: fixed; width: 635px">
+                        <colgroup>
+                            <col style="width: 150px;">
+                            <col style="width: 350px">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th class="tg-error" colspan="2"><span style="font-weight:bold;color:#FFFFFF">Internal Error !!</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="tg-err-1">Error</td>
+                                <td class="tg-err-1"><%= intResponse.error %></td>
+                            </tr>
+                            <tr>
+                                <td class="tg-norm">Message</td>
+                                <td class="tg-norm"><%= intResponse.message %></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            <% } %>
+
+        </div>
+    </body>
+
+</html>

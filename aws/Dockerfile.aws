@@ -1,0 +1,70 @@
+ARG ECR_BASE_REPO_URI
+
+FROM ${ECR_BASE_REPO_URI}
+
+ARG LOGIN_USERNAME
+ARG LOGIN_USERNAME_PWD
+ARG APP_PORT
+ARG APP_RUN_OPTION
+
+ENV ENV_USER_NAME=${LOGIN_USERNAME}
+ENV ENV_USER_PWD=${LOGIN_USERNAME_PWD}
+ENV ENV_WORK_DIR=/home/${ENV_USER_NAME}
+ENV ENV_APP_PORT=${APP_PORT}
+ENV ENV_APP_RUN_OPTION=${APP_RUN_OPTION}
+
+RUN apt-get update \
+    && apt-get --no-install-recommends install -y \
+        build-essential \
+    && apt-get clean -y \
+    && apt-get autoclean -y \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN echo "Node Version: " $(node --version)
+RUN echo "NPM Version: " $(npm -v)
+
+RUN npm config set fetch-retry-mintimeout 2000000 && npm config set fetch-retry-maxtimeout 12000000 && npm config set fetch-timeout 30000000
+RUN npm set maxsockets 3
+RUN npm config set update-notifier false
+
+## User Management
+#Note 1: Ensure that 'docker' group already exists on the system
+#Note 2: Ensure that 'perl' exists on the system
+RUN useradd -p $(perl -e 'print crypt($ARGV[0], "password")' ${ENV_USER_PWD}) ${ENV_USER_NAME}
+
+## Dir Management
+RUN mkdir -p /home/${ENV_USER_NAME}/healthChecker/build
+RUN chmod -R 777 /home/${ENV_USER_NAME}
+
+RUN chown -R ${ENV_USER_NAME}:${ENV_USER_NAME} ${ENV_WORK_DIR}/healthChecker
+
+# Set NPM config locally for app
+RUN cat /root/.npmrc > ${ENV_WORK_DIR}/healthChecker/.npmrc
+
+## Environment Preparation
+USER ${ENV_USER_NAME}
+
+WORKDIR ${ENV_WORK_DIR}
+
+COPY --chown=healthcheckerappuser:healthcheckerappuser build ${ENV_WORK_DIR}/healthChecker/build
+COPY --chown=healthcheckerappuser:healthcheckerappuser envs ${ENV_WORK_DIR}/healthChecker/envs
+COPY --chown=healthcheckerappuser:healthcheckerappuser public ${ENV_WORK_DIR}/healthChecker/public
+COPY --chown=healthcheckerappuser:healthcheckerappuser lib ${ENV_WORK_DIR}/healthChecker/lib
+COPY --chown=healthcheckerappuser:healthcheckerappuser package.json ${ENV_WORK_DIR}/healthChecker/
+COPY --chown=healthcheckerappuser:healthcheckerappuser package-lock.json ${ENV_WORK_DIR}/healthChecker/
+COPY --chown=healthcheckerappuser:healthcheckerappuser aws/app-entrypoint.sh ${ENV_WORK_DIR}/healthChecker/
+
+#Install NPM Modules
+RUN cd ${ENV_WORK_DIR}/healthChecker && npm install --quiet --no-fund --no-audit --only=prod
+
+# Provide shell files executable priviliges to avoid permission errors
+RUN find ./healthChecker -type f -iname "*.sh" -exec chmod u+x {} +
+
+# RUN ls -al ${ENV_WORK_DIR}/healthChecker/app
+
+## Open Ports
+EXPOSE ${ENV_APP_PORT}
+
+## Executions
+CMD ["sh","-c", "${ENV_WORK_DIR}/healthChecker/app-entrypoint.sh"]

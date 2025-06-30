@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "commonjs",                           /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', 'es2020', or 'ESNext'. */
+    "lib": ["es2018"],
+    "allowJs": true,                                /* Allow javascript files to be compiled. */
+    "checkJs": true,                                /* Report errors in .js files. */
+    
+    //"rootDir": ".",    
+    "outDir": "./build",                             /* Redirect output structure to the directory. */
+    
+    "strict": true,
+    "noUnusedLocals": false,                         /* Report errors on unused locals. */
+    "noUnusedParameters": false,                      /* Report errors on unused parameters. */
+    "noImplicitReturns": true,                       /* Report error when not all code paths in function return a value. */
+    "noFallthroughCasesInSwitch": true,              /* Report errors for fallthrough cases in switch statement. */
+
+    /* Module Resolution Options */
+    "moduleResolution": "node",                       /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
+    "typeRoots": [
+      "node_modules/@types"
+    ],                                              /* List of folders to include type definitions from. */
+    // "types": [],                                 /* Type declaration files to be included in compilation. */
+    "esModuleInterop": true,                        /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
+
+    /* Advanced Options */
+    "resolveJsonModule": true,                         /* Allows importing modules with a ‘.json’ extension */
+    "skipLibCheck": true,                             /* Skip type checking of declaration files. */
+    "forceConsistentCasingInFileNames": true,          /* Disallow inconsistently-cased references to the same file. */
+
+    /* Source Map Options */
+    "inlineSourceMap": true,
+    "inlineSources": true,
+  },
+  "include": [
+    "./src/**/*",
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
